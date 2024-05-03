@@ -1,53 +1,14 @@
-const express = require('express');
-const app = express();
-const request = require('request');
-const wikip = require('wiki-infobox-parser');
+// Load the HTTP module
+const http = require('http');
 
-//ejs
-app.set("view engine", 'ejs');
-
-//routes
-app.get('/', (req,res) =>{
-    res.render('index');
+// Configure our HTTP server to respond with "Hello, World!" to all requests
+const server = http.createServer((request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/plain' });
+  response.end('Hello, World!\n');
 });
 
-app.get('/index', (req,response) =>{
-    let url = "https://en.wikipedia.org/w/api.php"
-    let params = {
-        action: "opensearch",
-        search: req.query.person,
-        limit: "1",
-        namespace: "0",
-        format: "json"
-    }
+// Listen on port 3000, IP defaults to 127.0.0.1
+server.listen(3000);
 
-    url = url + "?"
-    Object.keys(params).forEach( (key) => {
-        url += '&' + key + '=' + params[key]; 
-    });
-
-    //get wikip search string
-    request(url,(err,res, body) =>{
-        if(err) {
-            response.redirect('404');
-        }
-            result = JSON.parse(body);
-            x = result[3][0];
-            x = x.substring(30, x.length); 
-            //get wikip json
-            wikip(x , (err, final) => {
-                if (err){
-                    response.redirect('404');
-                }
-                else{
-                    const answers = final;
-                    response.send(answers);
-                }
-            });
-    });
-
-    
-});
-
-//port
-app.listen(3000, console.log("Listening at port 3000..."))
+// Put a friendly message on the terminal
+console.log('Server running at http://127.0.0.1:3000/');
